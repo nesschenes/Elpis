@@ -19,6 +19,8 @@ namespace Elpis.Network
             Connected,
         }
 
+        private UnityThreading.ActionThread mPingPongThread;
+
         private readonly WebSocket mWebSocket;
         private readonly PingPong mPingPong;
 
@@ -29,7 +31,7 @@ namespace Elpis.Network
 
         private string mServerPath = "http://ynserver.herokuapp.com/";
 
-        public event Action SocketConnected;
+        public event Action SocketConnected = delegate { };
         public event Action<string> SocketDisconnected;
         public event Action<string> SocketOnErrorOccured = delegate { };
 
@@ -56,6 +58,9 @@ namespace Elpis.Network
             mWebSocket.TextReceived += WebSocket_OnTextReceived;
             mWebSocket.DataReceived += WebSocket_OnDataReceived;
 
+            // 初始化 PingPong Thread
+            mPingPongThread = UnityThreadHelper.CreateThread(() => { return; });
+
             mPingPong = new PingPong();
 
             State = ConnectionState.Disconnected;
@@ -69,12 +74,10 @@ namespace Elpis.Network
 
             State = ConnectionState.Connected;
 
-            UnityThreadHelper.Dispatcher.Dispatch(mPingPong.StartPingPong);
+            // 已連線，開始 Ping-Pong
+            mPingPongThread.Dispatch(mPingPong.StartPingPong);
 
-            if (SocketConnected != null)
-            {
-                UnityThreadHelper.Dispatcher.Dispatch(SocketConnected);
-            }
+            UnityThreadHelper.Dispatcher.Dispatch(SocketConnected);
         }
 
         private void WebSocket_OnDisconnected(WebSocket ws, int code, string reason)
@@ -94,7 +97,7 @@ namespace Elpis.Network
         {
             Debug.LogFormat("連線錯誤： host: {0}, msg: {1}", ws.Uri, e);
 
-            UnityThreadHelper.Dispatcher.Dispatch(mPingPong.StopPingPong);
+            mPingPongThread.Dispatch(mPingPong.StopPingPong);
 
             UnityThreadHelper.Dispatcher.Dispatch(TryConnectServer);
 
@@ -107,8 +110,8 @@ namespace Elpis.Network
 
             key = GetTextCmdDetail(text, out value);
 
-            if (!key.StartsWith("!pong"))
-                Debug.LogFormat("接收到{0}", text);
+            //if (!key.StartsWith("!pong"))
+            Debug.LogFormat("接收到{0}", text);
 
             if (!string.IsNullOrEmpty(key))
             {
@@ -295,8 +298,8 @@ namespace Elpis.Network
         {
             mWebSocket.Send(text);
 
-            if ((text.StartsWith("!ping") || text.StartsWith("_ping") || text.StartsWith("_PONG")))
-                return;
+            // if (text.StartsWith("!ping"))
+            //     return;
 
             Debug.Log("送出" + text);
         }

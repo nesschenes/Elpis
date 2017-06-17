@@ -22,6 +22,11 @@ namespace Elpis.Login
             m_LoginBtn.onClick.AddListener(OnLogin);
         }
 
+        void Start()
+        {
+
+        }
+
         void OnDestroy()
         {
             m_LoginBtn.onClick.RemoveListener(OnLogin);
@@ -34,10 +39,10 @@ namespace Elpis.Login
 
         void OnLogin()
         {
-            if (string.IsNullOrEmpty(mUserName))
-                return;
+            // if (string.IsNullOrEmpty(mUserName))
+            //     return;
 
-            mServerPath = "http://ynserver.herokuapp.com/";
+            mServerPath = "https://ynserver.herokuapp.com/";
 
             Global.Instance.Socket.Connect(mServerPath);
         }
