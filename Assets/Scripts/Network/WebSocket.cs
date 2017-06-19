@@ -84,7 +84,8 @@ namespace Elpis.Network
             if (NetworkState != State.Connected)
                 return;
 
-            mInstance.CloseAsync(9527, "CloseImeediately");
+            // 代碼詳見：https://developer.mozilla.org/zh-TW/docs/WebSockets/WebSockets_reference/CloseEvent
+            mInstance.CloseAsync(4999, "CloseImeediately");
         }
 
         public void Send(string _text)

@@ -11,5 +11,6 @@
     public enum Cmd
     {
         Test,
+        Connection,
     }
 }

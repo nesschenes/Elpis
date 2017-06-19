@@ -29,7 +29,7 @@ namespace Elpis.Network
         private uint mServerTime;
         private float mClientBaseTime;
 
-        private string mServerPath = "http://ynserver.herokuapp.com/";
+        private string mServerPath = "https://ynserver.herokuapp.com/";
 
         public event Action SocketConnected = delegate { };
         public event Action<string> SocketDisconnected;
@@ -37,8 +37,6 @@ namespace Elpis.Network
 
         public long PingTime { get { return mPingPong.PingTime; } }
         public ConnectionState State;
-        public bool CanReconnet = true;
-
         public string ServerPath { get { return mServerPath; } }
 
         // 是不精確的時間(沒考慮network latency), 但拿來當ui顯示時間應該可以(最多誤差10 + latency秒)
@@ -78,13 +76,19 @@ namespace Elpis.Network
             mPingPongThread.Dispatch(mPingPong.StartPingPong);
 
             UnityThreadHelper.Dispatcher.Dispatch(SocketConnected);
+
+            // Test string.Format("[\"{0}\",{1}]", ev, data)
+            Hashtable args = new Hashtable();
+            args.Add("Yihau", "!pong");
+            Global.Instance.Socket.SendText("test " + MiniJSON.Encode(args));
+            //Global.Instance.Socket.SendText(string.Format("[\"test\",{0}]", 123));
         }
 
         private void WebSocket_OnDisconnected(WebSocket ws, int code, string reason)
         {
-            Debug.LogFormat("非主動斷線： host: {0}, code: {1}, reason: {2}", ws.Uri, code, reason);
+            Debug.LogFormat("斷線：host: {0}, code: {1}, reason：{2}", ws.Uri, code, reason);
 
-            if (code != 9527 && CanReconnet)
+            if (code != 4999)
             {
                 mPingPong.StopPingPong();
 
@@ -95,7 +99,7 @@ namespace Elpis.Network
 
         private void WebSocket_OnErrorOccured(WebSocket ws, Exception e)
         {
-            Debug.LogFormat("連線錯誤： host: {0}, msg: {1}", ws.Uri, e);
+            Debug.LogFormat("連線錯誤：host：{0}, msg：{1}", ws.Uri, e);
 
             mPingPongThread.Dispatch(mPingPong.StopPingPong);
 
@@ -111,7 +115,7 @@ namespace Elpis.Network
             key = GetTextCmdDetail(text, out value);
 
             //if (!key.StartsWith("!pong"))
-            Debug.LogFormat("接收到{0}", text);
+            Debug.LogFormat("接收到：{0}", text);
 
             if (!string.IsNullOrEmpty(key))
             {
@@ -135,6 +139,7 @@ namespace Elpis.Network
         private void HandleTextCommand(Task task)
         {
             string[] cmd = task.UserData as string[];
+            Debug.Log(cmd[0] + ", " + cmd[1]);
             HandleTextCommand(cmd[0], cmd[1]);
         }
 
@@ -186,15 +191,15 @@ namespace Elpis.Network
                                 }
                                 catch (Exception _ex)
                                 {
-                                    Debug.LogErrorFormat("cmd {0} exception {1} \n {2}", key, _ex.Message, _ex.StackTrace);
+                                    Debug.LogErrorFormat("cmd：{0} exception {1} \n {2}", key, _ex.Message, _ex.StackTrace);
                                 }
                             }
                             else
-                                Debug.LogErrorFormat("cmd {0} is null", key);
+                                Debug.LogErrorFormat("cmd：{0} is null", key);
                         }
                         else
                         {
-                            Debug.LogWarningFormat("尚未處理的cmd: {0}", key);
+                            Debug.LogWarningFormat("尚未處理的 cmd：{0}", key);
                         }
 
                         break;
@@ -224,8 +229,8 @@ namespace Elpis.Network
                             {
                                 if (!mIgnoreCmdLog.Contains(cmd))
                                 {
-                                    Debug.LogFormat("接收到bcmd:{0}", cmd);
-                                    Debug.LogFormat("接收到bcmd:{0}, 資料:{1}", cmd, dataStr);
+                                    Debug.LogFormat("接收到bcmd：{0}", cmd);
+                                    Debug.LogFormat("接收到bcmd：{0}, 資料：{1}", cmd, dataStr);
                                 }
 
                                 if (mCmds.TryGetValue(cmd, out target))
@@ -237,13 +242,13 @@ namespace Elpis.Network
                                 }
                                 else
                                 {
-                                    Debug.LogWarningFormat("尚未處理的cmd: {0}", cmd);
+                                    Debug.LogWarningFormat("尚未處理的cmd：{0}", cmd);
                                 }
                             }
                         }
                         else
                         {
-                            Debug.LogFormat(string.Format("bcmd error code:{0}", error));
+                            Debug.LogFormat(string.Format("bcmd error code：{0}", error));
                         }
 
                         break;
@@ -253,11 +258,11 @@ namespace Elpis.Network
 
         private void TryConnectServer()
         {
-            mWebSocket.Close(9527, "新連線");
+            mWebSocket.Close(4999, "新連線");
 
             Uri uri = new Uri(ServerPath);
 
-            Debug.LogFormat("準備連線至 {0}:{1}", uri.Host, uri.Port);
+            Debug.LogFormat("準備連線至 {0}：{1}", uri.Host, uri.Port);
             mWebSocket.Connect(uri.Host, uri.Port, ServerPath.Contains("https"), "null");
         }
 
@@ -284,8 +289,6 @@ namespace Elpis.Network
 
         internal void DisconnectImmediately()
         {
-            CanReconnet = false;
-
             if (State == ConnectionState.Connected)
             {
                 Debug.Log("主動立即斷線");
@@ -301,7 +304,28 @@ namespace Elpis.Network
             // if (text.StartsWith("!ping"))
             //     return;
 
-            Debug.Log("送出" + text);
+            Debug.Log("送出：" + text);
+        }
+
+        public void SendCmd(Cmd _cmd, Dictionary<object, object> _args = null)
+        {
+            StringBuilder data = new StringBuilder();
+
+            data.Append(_cmd.ToString());
+
+            if (_args == null)
+                data.Append(",");
+
+            data.Append(_args.ToString());
+
+            if (_args == null)
+                _args = new Dictionary<object, object>();
+
+            _args["cmd"] = _cmd.ToString();
+
+            // mWebSocket.Send(_args);
+
+            Debug.Log("送出：" + _cmd.ToString());
         }
 
         // 暫時用不到
@@ -310,7 +334,7 @@ namespace Elpis.Network
             object cmd;
             if (!_args.TryGetValue("cmd", out cmd))
             {
-                Debug.LogFormat("送出bcmd 失敗! 找不到 Command !!!");
+                Debug.LogFormat("送出 bcmd 失敗! 找不到 Command !!!");
                 return;
             }
 
@@ -331,7 +355,7 @@ namespace Elpis.Network
                 SendBinaryRaw(output);
 
                 if (_showLog)
-                    Debug.LogFormat("送出bcmd:{0}", cmd.ToString());
+                    Debug.LogFormat("送出 bcmd：{0}", cmd.ToString());
             }
         }
 

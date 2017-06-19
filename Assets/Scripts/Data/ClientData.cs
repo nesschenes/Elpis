@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Elpis
 {
@@ -25,14 +26,20 @@ namespace Elpis
 
         private void cmd_test(string _value)
         {
+            Debug.Log("I got Test");
+        }
 
+        private void cmd_connection(string _value)
+        {
+            Debug.Log("I got Connection");
         }
 
         public Dictionary<string, Action<string>> GetCmds()
         {
             mCmds.Clear();
 
-            mCmds.Add(Cmd.Test.ToString(), cmd_test);
+            mCmds.Add(Cmd.Test.ToString().ToLower(), cmd_test);
+            mCmds.Add(Cmd.Connection.ToString().ToLower(), cmd_connection);
 
             return mCmds;
         }
