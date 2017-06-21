@@ -114,9 +114,6 @@ namespace Elpis.Network
 
             key = GetTextCmdDetail(text, out value);
 
-            //if (!key.StartsWith("!pong"))
-            Debug.LogFormat("接收到：{0}", text);
-
             if (!string.IsNullOrEmpty(key))
             {
                 Task task = Task.Create(HandleTextCommand);
@@ -139,7 +136,7 @@ namespace Elpis.Network
         private void HandleTextCommand(Task task)
         {
             string[] cmd = task.UserData as string[];
-            Debug.Log(cmd[0] + ", " + cmd[1]);
+            Debug.LogFormat("接收到 {0} ： {1}", cmd[0], cmd[1]);
             HandleTextCommand(cmd[0], cmd[1]);
         }
 
@@ -508,7 +505,7 @@ namespace Elpis.Network
                         if (mPingTime > PING_TIMEOUT * 1000)
                             mPingQueue.Clear();
 
-                        Global.Instance.Socket.SendText("pong" + mPingTime);
+                        Debug.LogFormat("Ping Time ：{0}", mPingTime);
                     }
                 }
             }
