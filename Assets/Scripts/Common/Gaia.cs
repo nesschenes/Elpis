@@ -1,5 +1,5 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Elpis
 {
@@ -8,7 +8,12 @@ namespace Elpis
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BeforeScene()
         {
-            Debug.Log("Gaia 誕生");
+            Debug.NessLog("Gaia 誕生");
+
+            Debug.NessLog("EventSystem 產出");
+            GameObject InputHelper = new GameObject("EventSystem", typeof(StandaloneInputModule));
+            InputHelper.isStatic = true;
+            Object.DontDestroyOnLoad(InputHelper);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -17,23 +22,23 @@ namespace Elpis
 
         }
 
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
 
         static Gaia()
         {
-            EditorApplication.playmodeStateChanged -= UnityEditor_OnPlayModeChanged;
-            EditorApplication.playmodeStateChanged += UnityEditor_OnPlayModeChanged;
+            UnityEditor.EditorApplication.playmodeStateChanged -= UnityEditor_OnPlayModeChanged;
+            UnityEditor.EditorApplication.playmodeStateChanged += UnityEditor_OnPlayModeChanged;
         }
 
         private static void UnityEditor_OnPlayModeChanged()
         {
-            if (EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
+            if (UnityEditor.EditorApplication.isPlaying && !UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 Global.Instance.Socket.DisconnectImmediately();
             }
         }
 
-#endif
+        #endif
 
     }
 }
