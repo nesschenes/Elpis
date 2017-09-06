@@ -16,3 +16,4 @@
  
 # need include the meta of file
 !*.*.meta
+.vscode/settings.json
