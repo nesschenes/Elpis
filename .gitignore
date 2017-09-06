@@ -1,3 +1,18 @@
 
-Temp/UnityLockfile
-.vscode/settings.json
+# unity ignore dir
+/[Bb]in/
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+ 
+# unity ignore file
+*.csproj
+*.unityproj
+*.sln
+*.user
+*.userprefs
+*.meta
+*.tmp
+ 
+# need include the meta of file
+!*.*.meta
