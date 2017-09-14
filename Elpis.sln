@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elpis.Plugins", "Elpis.Plug
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elpis.Editor", "Elpis.Editor.csproj", "{489908CE-6058-1FAE-B1CF-A2C057EFE740}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elpis.Editor.Plugins", "Elpis.Editor.Plugins.csproj", "{91317F03-3E54-AD7A-07BB-7CD8F8222228}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{489908CE-6058-1FAE-B1CF-A2C057EFE740}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{489908CE-6058-1FAE-B1CF-A2C057EFE740}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{489908CE-6058-1FAE-B1CF-A2C057EFE740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91317F03-3E54-AD7A-07BB-7CD8F8222228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91317F03-3E54-AD7A-07BB-7CD8F8222228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91317F03-3E54-AD7A-07BB-7CD8F8222228}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91317F03-3E54-AD7A-07BB-7CD8F8222228}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

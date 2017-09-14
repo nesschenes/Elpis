@@ -21,6 +21,7 @@ namespace Elpis.Test
         void Awake()
         {
             CreateTool("FileBrowser", "檔案瀏覽器", OnFileBrowser);
+            CreateTool("DOTween", "DOTween", OnDOTween);
 
             for (int i = 0; i < m_Tools.Length; i++)
                 m_Tools[i].Event_OnVisibleChange += OnToolVisibleChange;
@@ -72,6 +73,11 @@ namespace Elpis.Test
         void OnFileBrowser()
         {
             m_Tools[0].Show();
+        }
+
+        void OnDOTween()
+        {
+            m_Tools[1].Show();
         }
 
         #endregion
