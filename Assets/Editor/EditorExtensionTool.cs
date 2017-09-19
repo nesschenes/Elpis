@@ -33,18 +33,38 @@ namespace Elpis
 
         void OnGUI()
         {
+            GUI.backgroundColor = new Color32(0, 255, 255, 255);
+            GUI.contentColor = Color.white;
+
+            EditorGUILayout.BeginVertical();
+
+            GUIStyle guiStyle = new GUIStyle();
+            GUIStyleState styleState = new GUIStyleState();
+
+            GUI.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.4f);
+
+            styleState.background = Texture2D.whiteTexture;
+
+            styleState.textColor = Color.green;
+
+            guiStyle.normal = styleState;
+
+            GUI.Label(new Rect(0, 0, position.width, 20), "", guiStyle);
+
+            GUI.backgroundColor = new Color32(0, 255, 255, 255);
+
             EditorGUILayout.BeginHorizontal();
-
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Refresh", GUILayout.Width(350f), GUILayout.Height(25f)))
             {
-                Refresh();
+                GUILayout.Label("Scene", GUILayout.Width(60f));
+                GUILayout.Label("Path", GUILayout.Width(200f));
+
+                GUILayout.FlexibleSpace();
+
+                GUILayout.Label("Action", GUILayout.Width(100f));
             }
-
-            GUILayout.FlexibleSpace();
-
             EditorGUILayout.EndHorizontal();
+
+            GUILayout.Space(10);
 
             foreach (KeyValuePair<string, string> kvp in mScenes)
             {
@@ -56,14 +76,47 @@ namespace Elpis
 
                     GUILayout.FlexibleSpace();
 
-                    if (GUILayout.Button("Load", GUILayout.Width(100f), GUILayout.Height(25f)))
+                    if (SceneManager.GetActiveScene().name == kvp.Key)
                     {
-                        EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-                        EditorSceneManager.OpenScene(kvp.Value);
+                        GUI.backgroundColor = new Color32(255, 125, 130, 255);
+
+                        if (GUILayout.Button("Save", GUILayout.Width(100f), GUILayout.Height(25f)))
+                        {
+                            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), kvp.Value);
+                        }
+                    }
+                    else
+                    {
+                        GUI.backgroundColor = new Color32(0, 255, 255, 255);
+
+                        if (GUILayout.Button("Load", GUILayout.Width(100f), GUILayout.Height(25f)))
+                        {
+                            EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+                            EditorSceneManager.OpenScene(kvp.Value);
+                        }
                     }
                 }
                 EditorGUILayout.EndHorizontal();
             }
+
+            GUI.backgroundColor = new Color32(0, 255, 255, 255);
+
+            GUILayout.FlexibleSpace();
+
+            EditorGUILayout.BeginHorizontal();
+
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button("Refresh", GUILayout.Width(position.width - 20), GUILayout.Height(25f)))
+                Refresh();
+
+            GUILayout.FlexibleSpace();
+
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Space(10);
+
+            EditorGUILayout.EndVertical();
         }
 
         void Refresh()
