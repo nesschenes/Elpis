@@ -10,10 +10,15 @@ namespace Elpis
         {
             Debug.NessLog("Gaia 誕生");
 
-            Debug.NessLog("EventSystem 產出");
-            GameObject InputHelper = new GameObject("EventSystem", typeof(StandaloneInputModule));
-            InputHelper.isStatic = true;
-            Object.DontDestroyOnLoad(InputHelper);
+            GameObject inputHelper = new GameObject("EventSystem", typeof(StandaloneInputModule));
+            inputHelper.isStatic = true;
+            Object.DontDestroyOnLoad(inputHelper);
+            Debug.NessLog("EventSystem 已被產出");
+
+            GameObject undeadMono = new GameObject("UndeadMono", typeof(UndeadMono));
+            undeadMono.isStatic = true;
+            Object.DontDestroyOnLoad(undeadMono);
+            Debug.NessLog("UndeadMono 已被產出");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
